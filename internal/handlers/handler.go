@@ -12,7 +12,6 @@ type Handler struct {
 func NewHandler() *Handler {
 
 	r := chi.NewRouter()
-	r.Get("/health", healthCheck)
 	handler := &Handler{Runner: r}
 
 	return handler

@@ -10,6 +10,7 @@ var (
 		handlers.NewChatRoomHandler,
 		handlers.NewMessageHandler,
 		handlers.NewUserManagementHandler,
+		handlers.NewActuatorHandler,
 	)
 	HandlersModule = fx.Options(
 		handlersFactory,
@@ -17,5 +18,6 @@ var (
 		handlers.ModuleMessageHandler,
 		handlers.ModuleChatRoomHandler,
 		handlers.ModuleHandler,
+		handlers.ModuleActuatorHandler,
 	)
 )

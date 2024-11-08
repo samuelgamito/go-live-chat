@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 	"go-live-chat/internal/handlers"
+	"go-live-chat/internal/infraestructure/databases"
 	"go.uber.org/fx"
 	"net/http"
 )
 
-func RegisterHooks(lifecycle fx.Lifecycle, h *handlers.Handler) {
+func RegisterHooks(lifecycle fx.Lifecycle, h *handlers.Handler, m *databases.MongoDBClient) {
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(context.Context) error {
@@ -23,6 +24,7 @@ func RegisterHooks(lifecycle fx.Lifecycle, h *handlers.Handler) {
 			},
 			OnStop: func(context.Context) error {
 				fmt.Println("Stopping application")
+				m.CloseAll()
 				return nil
 			},
 		},
