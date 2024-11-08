@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-chi/chi"
-	"go-live-chat/constants"
+	"go-live-chat/internal/constants"
 	"net/http"
 )
 
