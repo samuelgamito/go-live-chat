@@ -48,7 +48,7 @@ func (a *ActuatorHandler) healthCheck(w http.ResponseWriter, r *http.Request) {
 		statusResponse.MongoStatus = "down"
 	}
 
-	err = a.mongoClient.OpenChat.Ping(ctx, nil)
+	err = a.redisClient.NotifyClientsRedis.Ping(ctx).Err()
 
 	if err != nil {
 		statusResponse.RedisStatus = "down"
