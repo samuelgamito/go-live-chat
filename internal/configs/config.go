@@ -20,7 +20,7 @@ func NewEnvConfig() *Config {
 			Host:     getEnv("mongoHost", "localhost"),
 			Protocol: getEnv("mongoProtocol", "mongodb"),
 			Port:     getEnv("mongoPort", "27017"),
-			Database: getEnv("mongoDatabase", "OpenChat"),
+			Database: getEnv("mongoDatabase", "Develop"),
 		},
 		NotifyClientsRedis: &RedisConfig{
 			Addr:     getEnv("redisAddr", "localhost:6379"),

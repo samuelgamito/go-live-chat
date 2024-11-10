@@ -11,7 +11,9 @@ func main() {
 	fx.New(
 		fx.Options(
 			modules.InfraModule,
+			modules.UseCaseModule,
 			modules.HandlersModule,
+			modules.RepositoriesModule,
 			fx.Provide(
 				configs.NewEnvConfig,
 			),

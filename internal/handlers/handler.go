@@ -13,7 +13,7 @@ func NewHandler() *Handler {
 
 	r := chi.NewRouter()
 	handler := &Handler{Runner: r}
-
+	r.Use(Recovery)
 	return handler
 }
 

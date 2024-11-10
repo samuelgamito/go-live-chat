@@ -36,6 +36,8 @@ func (a *ActuatorHandler) healthCheck(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
 
+	w.Header().Set("Content-Type", "application/json")
+
 	statusResponse := ActuatorResponse{
 		MongoStatus:  "up",
 		ServerStatus: "up",

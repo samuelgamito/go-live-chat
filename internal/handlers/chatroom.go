@@ -1,20 +1,28 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/go-chi/chi"
+	"go-live-chat/internal/handlers/dto"
+	"go-live-chat/internal/misc"
+	usecase "go-live-chat/internal/usecase/chatroom"
 	"go.uber.org/fx"
 	"net/http"
 )
 
-type ChatRoomHandler struct{}
+type ChatRoomHandler struct {
+	createChatroomUseCase *usecase.CreateChatRoomUseCase
+}
 
-func NewChatRoomHandler() *ChatRoomHandler {
-	return &ChatRoomHandler{}
+func NewChatRoomHandler(createChatroomUseCase *usecase.CreateChatRoomUseCase) *ChatRoomHandler {
+	return &ChatRoomHandler{
+		createChatroomUseCase: createChatroomUseCase,
+	}
 }
 
 func registerChatRoomHandlers(c *ChatRoomHandler, h *Handler) {
 	h.Runner.Group(func(r chi.Router) {
-		r.Use(tokenValidationMiddleware)
+		//r.Use(tokenValidationMiddleware)
 		r.Route("/api/chatrooms", func(r chi.Router) {
 			r.Post("/", c.createChatroom)
 
@@ -30,10 +38,32 @@ func registerChatRoomHandlers(c *ChatRoomHandler, h *Handler) {
 }
 
 func (c *ChatRoomHandler) createChatroom(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Create Chatroom"))
-	if err != nil {
+	ctx := r.Context()
+
+	var createRequest dto.CreateChatRoomRequestDTO
+	if err := json.NewDecoder(r.Body).Decode(&createRequest); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
+
+	if errValid := createRequest.IsValid(); errValid != nil {
+		misc.WriteJSONResponse(w, errValid.StatusCode, errValid.Body)
+		return
+	}
+
+	id, errUseCase := c.createChatroomUseCase.Execute(createRequest.ToModel(), ctx)
+	if errUseCase != nil {
+		errResp := dto.ErrorResponse{}
+		errResp.FromModel(errUseCase)
+		misc.WriteJSONResponse(w, errResp.StatusCode, errResp.Body)
+		return
+	}
+
+	resp := dto.CreatedChatRoomDTO{
+		Id: id,
+	}
+
+	misc.WriteJSONResponse(w, http.StatusCreated, resp)
 }
 
 func (c *ChatRoomHandler) leaveChatroom(w http.ResponseWriter, r *http.Request) {
