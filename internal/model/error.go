@@ -6,3 +6,7 @@ type (
 		Messages   []string
 	}
 )
+
+func (e Error) Error() string {
+	return e.Messages[0]
+}
