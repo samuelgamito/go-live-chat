@@ -5,16 +5,15 @@ import (
 	"github.com/go-chi/chi"
 	"go-live-chat/internal/handlers/dto"
 	"go-live-chat/internal/misc"
-	usecase "go-live-chat/internal/usecase/chatroom"
 	"go.uber.org/fx"
 	"net/http"
 )
 
 type ChatRoomHandler struct {
-	createChatroomUseCase *usecase.CreateChatRoomUseCase
+	createChatroomUseCase CreateChatroomUseCase
 }
 
-func NewChatRoomHandler(createChatroomUseCase *usecase.CreateChatRoomUseCase) *ChatRoomHandler {
+func NewChatRoomHandler(createChatroomUseCase CreateChatroomUseCase) *ChatRoomHandler {
 	return &ChatRoomHandler{
 		createChatroomUseCase: createChatroomUseCase,
 	}
