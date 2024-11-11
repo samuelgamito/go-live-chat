@@ -1,18 +1,18 @@
-package usecase
+package usecase_chatroom
 
 import (
 	"context"
 	"fmt"
 	"go-live-chat/internal/model"
-	"go-live-chat/internal/repositories"
+	"go-live-chat/internal/usecase"
 	"time"
 )
 
 type CreateChatRoomUseCase struct {
-	repo *repositories.ChatroomRepository
+	repo usecase.ChatroomRepository
 }
 
-func NewCreateChatroomUseCase(repo *repositories.ChatroomRepository) *CreateChatRoomUseCase {
+func NewCreateChatroomUseCase(repo usecase.ChatroomRepository) *CreateChatRoomUseCase {
 	return &CreateChatRoomUseCase{repo: repo}
 }
 
