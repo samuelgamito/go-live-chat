@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/go-chi/chi"
+	"go-live-chat/internal/constants"
 	"go-live-chat/internal/handlers/dto"
 	"go-live-chat/internal/misc"
 	"go.uber.org/fx"
@@ -10,12 +11,14 @@ import (
 )
 
 type ChatRoomHandler struct {
-	createChatroomUseCase CreateChatroomUseCase
+	createChatroomUseCase   CreateChatroomUseCase
+	retrieveChatroomUseCase RetrieveChatroomUseCase
 }
 
-func NewChatRoomHandler(createChatroomUseCase CreateChatroomUseCase) *ChatRoomHandler {
+func NewChatRoomHandler(createChatroomUseCase CreateChatroomUseCase, retrieveChatroomUseCase RetrieveChatroomUseCase) *ChatRoomHandler {
 	return &ChatRoomHandler{
-		createChatroomUseCase: createChatroomUseCase,
+		createChatroomUseCase:   createChatroomUseCase,
+		retrieveChatroomUseCase: retrieveChatroomUseCase,
 	}
 }
 
@@ -24,11 +27,11 @@ func registerChatRoomHandlers(c *ChatRoomHandler, h *Handler) {
 		//r.Use(tokenValidationMiddleware)
 		r.Route("/api/chatrooms", func(r chi.Router) {
 			r.Post("/", c.createChatroom)
-
+			r.Get("/", c.listChatroom)
 			r.Route("/{roomId}", func(r chi.Router) {
-
 				r.Use(chatroomCtx)
 
+				r.Get("/", c.chatRoomDetails)
 				r.Post("/leave", c.leaveChatroom)
 				r.Post("/join", c.joinChatroom)
 			})
@@ -77,6 +80,37 @@ func (c *ChatRoomHandler) joinChatroom(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+}
+
+func (c *ChatRoomHandler) listChatroom(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	listChatRoom, errResp := c.retrieveChatroomUseCase.ExecuteByFilter(ctx)
+
+	if errResp != nil {
+		misc.WriteJSONResponse(w, errResp.StatusCode, errResp.Messages)
+	}
+
+	var res []dto.ChatRoomDTO
+
+	for _, v := range listChatRoom {
+		res = append(res, dto.GetChatroomResponse(&v))
+	}
+
+	misc.WriteJSONResponse(w, http.StatusOK, res)
+}
+
+func (c *ChatRoomHandler) chatRoomDetails(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	roomId := ctx.Value(constants.RoomIDKey).(string)
+
+	res, errResp := c.retrieveChatroomUseCase.ExecuteById(roomId, ctx)
+
+	if errResp != nil {
+		misc.WriteJSONResponse(w, errResp.StatusCode, errResp.Messages)
+	}
+
+	misc.WriteJSONResponse(w, http.StatusOK, dto.GetChatroomResponse(res))
 }
 
 var ModuleChatRoomHandler = fx.Invoke(registerChatRoomHandlers)

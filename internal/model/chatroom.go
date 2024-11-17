@@ -12,8 +12,8 @@ type (
 		Owner       string             `json:"owner" bson:"owner"`
 		Description string             `json:"description" bson:"description"`
 		Members     []Member           `json:"members" bson:"members"`
-		CreatedAt   time.Time          `json:"created_at" bson:"createdAt"`
-		UpdatedAt   time.Time          `json:"updated_at" bson:"updatedAt"`
+		CreatedAt   *time.Time         `json:"created_at" bson:"createdAt"`
+		UpdatedAt   *time.Time         `json:"updated_at" bson:"updatedAt"`
 	}
 
 	Member struct {

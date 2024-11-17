@@ -28,7 +28,7 @@ func (m *ChatRoomUseCase) Execute(model model.Chatroom, ctx context.Context) (st
 func TestCreateChatroom_Success(t *testing.T) {
 	// Arrange
 	mockUseCase := new(ChatRoomUseCase)
-	handler := NewChatRoomHandler(mockUseCase)
+	handler := NewChatRoomHandler(mockUseCase, nil)
 	router := http.NewServeMux()
 	router.HandleFunc("/api/chatrooms", handler.createChatroom)
 
@@ -60,7 +60,7 @@ func TestCreateChatroom_Success(t *testing.T) {
 func TestCreateChatroom_InvalidRequest(t *testing.T) {
 	// Arrange
 	mockUseCase := new(ChatRoomUseCase)
-	handler := NewChatRoomHandler(mockUseCase)
+	handler := NewChatRoomHandler(mockUseCase, nil)
 	router := http.NewServeMux()
 	router.HandleFunc("/api/chatrooms", handler.createChatroom)
 
@@ -78,7 +78,7 @@ func TestCreateChatroom_InvalidRequest(t *testing.T) {
 func TestCreateChatroom_ValidationFails(t *testing.T) {
 	// Arrange
 	mockUseCase := new(ChatRoomUseCase)
-	handler := NewChatRoomHandler(mockUseCase)
+	handler := NewChatRoomHandler(mockUseCase, nil)
 	router := http.NewServeMux()
 	router.HandleFunc("/api/chatrooms", handler.createChatroom)
 
@@ -99,7 +99,7 @@ func TestCreateChatroom_ValidationFails(t *testing.T) {
 func TestCreateChatroom_UseCaseError(t *testing.T) {
 	// Arrange
 	mockUseCase := new(ChatRoomUseCase)
-	handler := NewChatRoomHandler(mockUseCase)
+	handler := NewChatRoomHandler(mockUseCase, nil)
 	router := http.NewServeMux()
 	router.HandleFunc("/api/chatrooms", handler.createChatroom)
 
