@@ -12,6 +12,7 @@ var (
 		handlers.NewMessageHandler,
 		handlers.NewUserManagementHandler,
 		handlers.NewActuatorHandler,
+		handlers.NewChatWebSocketHandler,
 		fx.Annotate(
 			usecase.NewCreateChatroomUseCase,
 			fx.As(new(handlers.CreateChatroomUseCase)),
@@ -27,6 +28,7 @@ var (
 	)
 	HandlersModule = fx.Options(
 		handlersFactory,
+		handlers.ModuleChatWebSocketHandler,
 		handlers.ModuleUserManagementHandler,
 		handlers.ModuleMessageHandler,
 		handlers.ModuleChatRoomHandler,

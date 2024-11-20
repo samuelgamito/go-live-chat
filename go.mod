@@ -5,6 +5,7 @@ go 1.23.2
 require (
 	github.com/go-chi/chi v1.5.5
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/gorilla/websocket v1.5.3
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.17.1
