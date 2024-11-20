@@ -11,3 +11,7 @@ type ChatroomRepository interface {
 	GetByFilter(ctx context.Context) ([]model.Chatroom, error)
 	Update(chatroom model.Chatroom, ctx context.Context) (*model.Chatroom, error)
 }
+
+type ChatroomRepositoryCreate interface {
+	Create(chatroom model.Chatroom, ctx context.Context) (*model.Chatroom, error)
+}

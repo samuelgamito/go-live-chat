@@ -8,15 +8,15 @@ import (
 	"time"
 )
 
-type CreateChatRoomUseCase struct {
-	repo usecase.ChatroomRepository
+type ChatroomRepositoryCreate struct {
+	repo usecase.ChatroomRepositoryCreate
 }
 
-func NewCreateChatroomUseCase(repo usecase.ChatroomRepository) *CreateChatRoomUseCase {
-	return &CreateChatRoomUseCase{repo: repo}
+func NewCreateChatroomUseCase(repo usecase.ChatroomRepositoryCreate) *ChatroomRepositoryCreate {
+	return &ChatroomRepositoryCreate{repo: repo}
 }
 
-func (c *CreateChatRoomUseCase) Execute(chatroom model.Chatroom, ctx context.Context) (string, *model.Error) {
+func (c *ChatroomRepositoryCreate) Execute(chatroom model.Chatroom, ctx context.Context) (string, *model.Error) {
 
 	chatroom.Members = append(chatroom.Members, model.Member{
 		Id:      chatroom.Owner,
