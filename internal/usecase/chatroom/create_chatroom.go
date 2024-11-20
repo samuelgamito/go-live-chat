@@ -2,9 +2,9 @@ package usecase_chatroom
 
 import (
 	"context"
-	"fmt"
 	"go-live-chat/internal/model"
 	"go-live-chat/internal/usecase"
+	"log"
 	"time"
 )
 
@@ -26,8 +26,7 @@ func (c *ChatroomRepositoryCreate) Execute(chatroom model.Chatroom, ctx context.
 	chatroomResp, err := c.repo.Create(chatroom, ctx)
 
 	if err != nil {
-		fmt.Print(err)
-
+		log.Printf("Error creating chatroom: %v", err)
 		var e model.Error
 		e.Messages = []string{"Error creating chatroom"}
 
