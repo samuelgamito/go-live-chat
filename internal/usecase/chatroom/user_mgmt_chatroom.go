@@ -9,10 +9,10 @@ import (
 )
 
 type UserManagementChatroomUseCase struct {
-	repo usecase.ChatroomRepository
+	repo usecase.ChatroomRepositoryUpdate
 }
 
-func NewUserManagementChatroomUseCase(repo usecase.ChatroomRepository) *UserManagementChatroomUseCase {
+func NewUserManagementChatroomUseCase(repo usecase.ChatroomRepositoryUpdate) *UserManagementChatroomUseCase {
 	return &UserManagementChatroomUseCase{
 		repo: repo,
 	}

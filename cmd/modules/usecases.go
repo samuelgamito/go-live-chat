@@ -10,7 +10,9 @@ var (
 	useCasesFactory = fx.Provide(
 		fx.Annotate(
 			repositories.NewChatroomRepository,
-			fx.As(new(usecase.ChatroomRepository)),
+			fx.As(new(usecase.ChatroomRepositoryUpdate)),
+			fx.As(new(usecase.ChatroomRepositoryCreate)),
+			fx.As(new(usecase.ChatroomRepositorySearch)),
 		),
 	)
 	UseCaseModule = fx.Options(useCasesFactory)
