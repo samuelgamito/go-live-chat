@@ -8,10 +8,10 @@ import (
 )
 
 type RetrieveChatroom struct {
-	repo usecase.ChatroomRepository
+	repo usecase.ChatroomRepositorySearch
 }
 
-func NewRetrieveChatroom(repo usecase.ChatroomRepository) *RetrieveChatroom {
+func NewRetrieveChatroom(repo usecase.ChatroomRepositorySearch) *RetrieveChatroom {
 	return &RetrieveChatroom{
 		repo: repo,
 	}

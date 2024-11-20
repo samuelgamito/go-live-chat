@@ -15,3 +15,8 @@ type ChatroomRepository interface {
 type ChatroomRepositoryCreate interface {
 	Create(chatroom model.Chatroom, ctx context.Context) (*model.Chatroom, error)
 }
+
+type ChatroomRepositorySearch interface {
+	GetById(id string, ctx context.Context) (*model.Chatroom, error)
+	GetByFilter(ctx context.Context) ([]model.Chatroom, error)
+}
