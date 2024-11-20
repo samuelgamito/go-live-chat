@@ -11,14 +11,20 @@ import (
 )
 
 type ChatRoomHandler struct {
-	createChatroomUseCase   CreateChatroomUseCase
-	retrieveChatroomUseCase RetrieveChatroomUseCase
+	createChatroomUseCase         CreateChatroomUseCase
+	retrieveChatroomUseCase       RetrieveChatroomUseCase
+	userManagementChatroomUseCase UserManagementChatroomUseCase
 }
 
-func NewChatRoomHandler(createChatroomUseCase CreateChatroomUseCase, retrieveChatroomUseCase RetrieveChatroomUseCase) *ChatRoomHandler {
+func NewChatRoomHandler(
+	createChatroomUseCase CreateChatroomUseCase,
+	retrieveChatroomUseCase RetrieveChatroomUseCase,
+	userManagementChatroomUseCase UserManagementChatroomUseCase,
+) *ChatRoomHandler {
 	return &ChatRoomHandler{
-		createChatroomUseCase:   createChatroomUseCase,
-		retrieveChatroomUseCase: retrieveChatroomUseCase,
+		createChatroomUseCase:         createChatroomUseCase,
+		retrieveChatroomUseCase:       retrieveChatroomUseCase,
+		userManagementChatroomUseCase: userManagementChatroomUseCase,
 	}
 }
 
@@ -69,17 +75,38 @@ func (c *ChatRoomHandler) createChatroom(w http.ResponseWriter, r *http.Request)
 }
 
 func (c *ChatRoomHandler) leaveChatroom(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Leave Chatroom"))
-	if err != nil {
+	ctx := r.Context()
+	roomId := ctx.Value(constants.RoomIDKey).(string)
+	user := r.Header.Get("X-User-ID")
+	if user == "" {
+		http.Error(w, "Missing User ID", http.StatusUnauthorized)
 		return
 	}
+
+	err := c.userManagementChatroomUseCase.Leave(roomId, user, ctx)
+
+	if err != nil {
+		misc.WriteJSONResponse(w, err.StatusCode, err.Messages)
+	}
+
+	misc.WriteJSONResponse(w, http.StatusOK, map[string]string{"message": "Left chatroom successfully"})
 }
 
 func (c *ChatRoomHandler) joinChatroom(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Join Chatroom"))
-	if err != nil {
+	ctx := r.Context()
+	roomId := ctx.Value(constants.RoomIDKey).(string)
+	user := r.Header.Get("X-User-ID")
+	if user == "" {
+		http.Error(w, "Missing User ID", http.StatusUnauthorized)
 		return
 	}
+	err := c.userManagementChatroomUseCase.Join(roomId, user, ctx)
+
+	if err != nil {
+		misc.WriteJSONResponse(w, err.StatusCode, err.Messages)
+	}
+
+	misc.WriteJSONResponse(w, http.StatusOK, map[string]string{"message": "Joined chatroom successfully"})
 }
 
 func (c *ChatRoomHandler) listChatroom(w http.ResponseWriter, r *http.Request) {

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"go-live-chat/internal/configs"
 	"go-live-chat/internal/infraestructure/databases"
 	"go-live-chat/internal/model"
@@ -49,7 +50,10 @@ func (c *ChatroomRepository) GetByFilter(ctx context.Context) ([]model.Chatroom,
 	}
 
 	opts := options.Find().SetProjection(projection)
-	cursor, err := c.client.Database(c.config.OpenChatMongoDB.Database).Collection("chatrooms").Find(ctx, filter, opts)
+	cursor, err := c.client.
+		Database(c.config.OpenChatMongoDB.Database).
+		Collection("chatrooms").
+		Find(ctx, filter, opts)
 
 	if err != nil {
 		return nil, err
@@ -74,9 +78,19 @@ func (c *ChatroomRepository) GetById(id string, ctx context.Context) (*model.Cha
 
 	var chatroom model.Chatroom
 
-	err = c.client.Database(c.config.OpenChatMongoDB.Database).Collection("chatrooms").FindOne(ctx, filter).Decode(&chatroom)
+	singleResult := c.client.
+		Database(c.config.OpenChatMongoDB.Database).
+		Collection("chatrooms").
+		FindOne(ctx, filter)
 
+	if singleResult.Err() != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	err = singleResult.Decode(&chatroom)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -89,7 +103,10 @@ func (c *ChatroomRepository) Update(chatroom model.Chatroom, ctx context.Context
 	filter := bson.M{"_id": chatroom.Id}
 	update := bson.M{"$set": chatroom}
 
-	_, err := c.client.Database(c.config.OpenChatMongoDB.Database).Collection("chatrooms").UpdateOne(ctx, filter, update)
+	_, err := c.client.
+		Database(c.config.OpenChatMongoDB.Database).
+		Collection("chatrooms").
+		UpdateOne(ctx, filter, update)
 
 	if err != nil {
 		return nil, err

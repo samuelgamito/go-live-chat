@@ -20,6 +20,10 @@ var (
 			usecase.NewRetrieveChatroom,
 			fx.As(new(handlers.RetrieveChatroomUseCase)),
 		),
+		fx.Annotate(
+			usecase.NewUserManagementChatroomUseCase,
+			fx.As(new(handlers.UserManagementChatroomUseCase)),
+		),
 	)
 	HandlersModule = fx.Options(
 		handlersFactory,
