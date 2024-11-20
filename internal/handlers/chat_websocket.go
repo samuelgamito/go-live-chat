@@ -2,16 +2,21 @@ package handlers
 
 import (
 	"github.com/gorilla/websocket"
+	"go-live-chat/internal/handlers/ws"
+	"go-live-chat/internal/infraestructure/databases"
 	"go.uber.org/fx"
 	"log"
 	"net/http"
 )
 
 type ChatWebSocketHandler struct {
+	redisClient *databases.RedisClient
 }
 
-func NewChatWebSocketHandler() *ChatWebSocketHandler {
-	return &ChatWebSocketHandler{}
+func NewChatWebSocketHandler(redisClient *databases.RedisClient) *ChatWebSocketHandler {
+	return &ChatWebSocketHandler{
+		redisClient: redisClient,
+	}
 }
 
 func registerChatWebSocketHandlers(c *ChatWebSocketHandler, h *Handler) {
@@ -27,38 +32,32 @@ var upgrade = websocket.Upgrader{
 }
 
 func (h *ChatWebSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	user := r.Header.Get("X-User-ID")
+	if user == "" {
+		http.Error(w, "Missing User ID", http.StatusUnauthorized)
+		return
+	}
 
 	conn, err := upgrade.Upgrade(w, r, nil)
-
 	if err != nil {
 		log.Println("Error upgrading connection:", err)
 		http.Error(w, "Could not open WebSocket connection", http.StatusBadRequest)
 		return
 	}
-
-	defer func(conn *websocket.Conn) {
-		err := conn.Close()
-		if err != nil {
-			log.Println("Error closing WebSocket connection:", err)
-		}
-	}(conn)
-
 	log.Println("WebSocket connection established")
 
-	for {
-		messageType, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("Error reading message:", err)
-			break
-		}
-
-		log.Printf("Received: %s\n", message)
-
-		// Echo the message back to the client.
-		err = conn.WriteMessage(messageType, message)
-		if err != nil {
-			log.Println("Error writing message:", err)
-			break
-		}
+	client := &ws.ConversationWSUseCase{
+		Conn:    conn,
+		Channel: user,
+		Rdb:     h.redisClient.NotifyClientsRedis,
 	}
+
+	defer client.Close()
+
+	go client.ListenAndForward(ctx)
+	go client.PublishFromWebSocket(ctx)
+
+	select {}
 }

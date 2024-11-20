@@ -6,12 +6,13 @@ import (
 )
 
 type RedisClient struct {
-	NotifyClientsRedis redis.Client
+	NotifyClientsRedis *redis.Client
 }
 
 func NewRedisClient(config *configs.Config) *RedisClient {
 	return &RedisClient{
-		NotifyClientsRedis: *redis.NewClient(&redis.Options{
+		NotifyClientsRedis: redis.NewClient(&redis.Options{
+			Username: config.NotifyClientsRedis.Username,
 			Addr:     config.NotifyClientsRedis.Addr,
 			Password: config.NotifyClientsRedis.Password,
 			DB:       config.NotifyClientsRedis.DB,

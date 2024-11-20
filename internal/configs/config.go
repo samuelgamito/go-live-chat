@@ -25,6 +25,7 @@ func NewEnvConfig() *Config {
 		NotifyClientsRedis: &RedisConfig{
 			Addr:     getEnv("redisAddr", "localhost:6379"),
 			Password: getEnv("redisPassword", ""),
+			Username: getEnv("redisUsername", ""),
 			DB:       getEnvAsInt("redisDB", "0"),
 			Protocol: getEnvAsInt("redisProtocol", "2"),
 		},
