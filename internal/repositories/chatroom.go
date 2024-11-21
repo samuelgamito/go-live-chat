@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 	"go-live-chat/internal/configs"
 	"go-live-chat/internal/infraestructure/databases"
 	"go-live-chat/internal/infraestructure/wrappers"
@@ -10,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"time"
 )
 
@@ -77,6 +77,7 @@ func (c *ChatroomRepository) GetById(id string, ctx context.Context) (*model.Cha
 
 	filter := bson.M{"_id": bsonId}
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
@@ -88,13 +89,14 @@ func (c *ChatroomRepository) GetById(id string, ctx context.Context) (*model.Cha
 		FindOne(ctx, filter)
 
 	if singleResult.Err() != nil {
-		fmt.Println(err)
+		err := singleResult.Err()
+		log.Println(err)
 		return nil, err
 	}
 
 	err = singleResult.Decode(&chatroom)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return nil, err
 	}
 
