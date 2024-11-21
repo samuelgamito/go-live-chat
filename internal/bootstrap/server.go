@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func RegisterHooks(lifecycle fx.Lifecycle, h *handlers.Handler, m *databases.MongoDBClient) {
+func RegisterHooks(lifecycle fx.Lifecycle, h *handlers.Handler, m *databases.MongoDBConnections) {
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(context.Context) error {

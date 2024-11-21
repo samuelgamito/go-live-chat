@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"go-live-chat/internal/configs"
 	"go-live-chat/internal/infraestructure/databases"
+	"go-live-chat/internal/infraestructure/wrappers"
 	"go-live-chat/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
+type MongoClientInterface interface {
+	Database(name string, opts ...*options.DatabaseOptions) wrappers.MongoDatabaseInterface
+}
+
 type ChatroomRepository struct {
-	client *mongo.Client
+	client MongoClientInterface
 	config *configs.Config
 }
 
-func NewChatroomRepository(client *databases.MongoDBClient, config *configs.Config) *ChatroomRepository {
+func NewChatroomRepository(client *databases.MongoDBConnections, config *configs.Config) *ChatroomRepository {
 	return &ChatroomRepository{client.OpenChat, config}
 }
 

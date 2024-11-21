@@ -17,11 +17,11 @@ type ActuatorResponse struct {
 }
 
 type ActuatorHandler struct {
-	mongoClient databases.MongoDBClient
+	mongoClient databases.MongoDBConnections
 	redisClient databases.RedisClient
 }
 
-func NewActuatorHandler(mongoClient *databases.MongoDBClient, redisClient *databases.RedisClient) *ActuatorHandler {
+func NewActuatorHandler(mongoClient *databases.MongoDBConnections, redisClient *databases.RedisClient) *ActuatorHandler {
 	return &ActuatorHandler{
 		mongoClient: *mongoClient,
 		redisClient: *redisClient,
