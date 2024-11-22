@@ -15,6 +15,6 @@ type RetrieveChatroomUseCase interface {
 }
 
 type UserManagementChatroomUseCase interface {
-	Join(roomId string, userId string, ctx context.Context) *model.Error
-	Leave(roomId string, userId string, ctx context.Context) *model.Error
+	Join(roomId string, userId string, ctx context.Context) (*model.Chatroom, *model.Error)
+	Leave(roomId string, userId string, ctx context.Context) (*model.Chatroom, *model.Error)
 }

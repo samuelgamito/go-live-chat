@@ -8,6 +8,7 @@ import (
 	"go-live-chat/internal/constants"
 	"go-live-chat/internal/handlers/dto"
 	"go-live-chat/internal/model"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,13 +27,21 @@ func (m *ChatRoomUseCase) Execute(model model.Chatroom, ctx context.Context) (st
 	return args.String(0), nil
 }
 
-func (m *ChatRoomUseCase) Join(roomId string, userId string, ctx context.Context) *model.Error {
-	_ = m.Called(roomId, userId, ctx)
-	return nil
+func (m *ChatRoomUseCase) Join(roomId string, userId string, ctx context.Context) (*model.Chatroom, *model.Error) {
+	args := m.Called(roomId, userId, ctx)
+	if args.Get(0) != nil {
+		return args.Get(0).(*model.Chatroom), nil
+	}
+
+	return nil, args.Get(1).(*model.Error)
 }
-func (m *ChatRoomUseCase) Leave(roomId string, userId string, ctx context.Context) *model.Error {
-	_ = m.Called(roomId, userId, ctx)
-	return nil
+func (m *ChatRoomUseCase) Leave(roomId string, userId string, ctx context.Context) (*model.Chatroom, *model.Error) {
+	args := m.Called(roomId, userId, ctx)
+	if args.Get(0) != nil {
+		return args.Get(0).(*model.Chatroom), nil
+	}
+
+	return nil, args.Get(1).(*model.Error)
 }
 
 func TestCreateChatroom_Success(t *testing.T) {
@@ -145,16 +154,26 @@ func TestLeaveChatroom_Success(t *testing.T) {
 	req = req.WithContext(context.WithValue(req.Context(), constants.RoomIDKey, "room123"))
 	req.Header.Set("X-User-ID", "user123")
 
+	chatroom := model.Chatroom{
+		Id:          primitive.NewObjectID(),
+		Name:        "Chatroom 1",
+		Description: "Description 1",
+		Owner:       "Owner 1",
+		Members:     []model.Member{},
+	}
+
 	recorder := httptest.NewRecorder()
 
-	mockUseCase.On("Leave", "room123", "user123", mock.Anything).Return(nil)
+	mockUseCase.On("Leave", "room123", "user123", mock.Anything).Return(&chatroom, nil)
 
 	// Act
 	router.ServeHTTP(recorder, req)
 
 	// Assert
+	chatroomResp := model.Chatroom{}
+	_ = json.NewDecoder(recorder.Body).Decode(&chatroomResp)
 	assert.Equal(t, http.StatusOK, recorder.Code)
-	assert.Contains(t, recorder.Body.String(), "Left chatroom successfully")
+	assert.Contains(t, chatroomResp.Id.Hex(), chatroom.Id.Hex())
 	mockUseCase.AssertExpectations(t)
 }
 
@@ -192,15 +211,24 @@ func TestJoinChatroom_Success(t *testing.T) {
 	req.Header.Set("X-User-ID", "user123")
 
 	recorder := httptest.NewRecorder()
+	chatroom := model.Chatroom{
+		Id:          primitive.NewObjectID(),
+		Name:        "Chatroom 1",
+		Description: "Description 1",
+		Owner:       "Owner 1",
+		Members:     []model.Member{},
+	}
 
-	mockUseCase.On("Join", "room123", "user123", mock.Anything).Return(nil)
+	mockUseCase.On("Join", "room123", "user123", mock.Anything).Return(&chatroom, nil)
 
 	// Act
 	router.ServeHTTP(recorder, req)
 
 	// Assert
+	chatroomResp := model.Chatroom{}
+	_ = json.NewDecoder(recorder.Body).Decode(&chatroomResp)
 	assert.Equal(t, http.StatusOK, recorder.Code)
-	assert.Contains(t, recorder.Body.String(), "Joined chatroom successfully")
+	assert.Contains(t, chatroomResp.Id.Hex(), chatroom.Id.Hex())
 	mockUseCase.AssertExpectations(t)
 }
 

@@ -83,13 +83,15 @@ func (c *ChatRoomHandler) leaveChatroom(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err := c.userManagementChatroomUseCase.Leave(roomId, user, ctx)
+	chatroom, err := c.userManagementChatroomUseCase.Leave(roomId, user, ctx)
 
+	chatroomResp := dto.GetChatroomResponse(chatroom)
 	if err != nil {
 		misc.WriteJSONResponse(w, err.StatusCode, err.Messages)
+		return
 	}
 
-	misc.WriteJSONResponse(w, http.StatusOK, map[string]string{"message": "Left chatroom successfully"})
+	misc.WriteJSONResponse(w, http.StatusOK, chatroomResp)
 }
 
 func (c *ChatRoomHandler) joinChatroom(w http.ResponseWriter, r *http.Request) {
@@ -100,13 +102,14 @@ func (c *ChatRoomHandler) joinChatroom(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing User ID", http.StatusUnauthorized)
 		return
 	}
-	err := c.userManagementChatroomUseCase.Join(roomId, user, ctx)
+	chatroom, err := c.userManagementChatroomUseCase.Join(roomId, user, ctx)
 
 	if err != nil {
 		misc.WriteJSONResponse(w, err.StatusCode, err.Messages)
+		return
 	}
 
-	misc.WriteJSONResponse(w, http.StatusOK, map[string]string{"message": "Joined chatroom successfully"})
+	misc.WriteJSONResponse(w, http.StatusOK, chatroom)
 }
 
 func (c *ChatRoomHandler) listChatroom(w http.ResponseWriter, r *http.Request) {
