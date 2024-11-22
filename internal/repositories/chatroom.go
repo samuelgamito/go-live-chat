@@ -105,6 +105,7 @@ func (c *ChatroomRepository) GetById(id string, ctx context.Context) (*model.Cha
 
 func (c *ChatroomRepository) Update(chatroom model.Chatroom, ctx context.Context) (*model.Chatroom, error) {
 	timeNow := time.Now()
+
 	chatroom.UpdatedAt = &timeNow
 	filter := bson.M{"_id": chatroom.Id}
 	update := bson.M{"$set": chatroom}
