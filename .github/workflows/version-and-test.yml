@@ -3,7 +3,7 @@ name: Run Tests and Generate Tag
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   run-tests-and-tag:
