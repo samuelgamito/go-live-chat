@@ -57,7 +57,7 @@ jobs:
       # Step 6: Push the Tag
       - name: Push Tag
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
         run: |
           git tag ${{ env.tag }}
           git push origin ${{ env.tag }}
