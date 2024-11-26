@@ -8,6 +8,7 @@ import (
 var (
 	repositoriesFactory = fx.Provide(
 		repositories.NewChatroomRepository,
+		repositories.NewConversationsRepository,
 	)
 
 	RepositoriesModule = fx.Options(repositoriesFactory)

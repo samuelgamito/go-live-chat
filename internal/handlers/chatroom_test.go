@@ -125,7 +125,7 @@ func TestCreateChatroom_UseCaseError(t *testing.T) {
 	createRequest := dto.CreateChatRoomRequestDTO{
 		Name: "Test Room",
 	}
-	mockUseCase.On("Execute", createRequest.ToModel(), mock.Anything).Return("", errors.New("use case error"))
+	mockUseCase.On("FindMembers", createRequest.ToModel(), mock.Anything).Return("", errors.New("use case error"))
 
 	body, _ := json.Marshal(createRequest)
 	req := httptest.NewRequest(http.MethodPost, "/api/chatrooms", bytes.NewReader(body))

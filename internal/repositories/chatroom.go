@@ -4,7 +4,6 @@ import (
 	"context"
 	"go-live-chat/internal/configs"
 	"go-live-chat/internal/infraestructure/databases"
-	"go-live-chat/internal/infraestructure/wrappers"
 	"go-live-chat/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,10 +11,6 @@ import (
 	"log"
 	"time"
 )
-
-type MongoClientInterface interface {
-	Database(name string, opts ...*options.DatabaseOptions) wrappers.MongoDatabaseInterface
-}
 
 type ChatroomRepository struct {
 	client MongoClientInterface

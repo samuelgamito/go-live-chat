@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"github.com/gorilla/websocket"
+	"go-live-chat/internal/handlers/dto"
 	"go-live-chat/internal/handlers/ws"
 	"go-live-chat/internal/infraestructure/databases"
+	"go-live-chat/internal/misc"
 	"go.uber.org/fx"
 	"log"
 	"net/http"
@@ -11,11 +13,17 @@ import (
 
 type ChatWebSocketHandler struct {
 	redisClient *databases.RedisClient
+	useCases    map[string]ws.ConversationUseCase
 }
 
-func NewChatWebSocketHandler(redisClient *databases.RedisClient) *ChatWebSocketHandler {
+func NewChatWebSocketHandler(
+	redisClient *databases.RedisClient,
+	useCases map[string]ws.ConversationUseCase,
+) *ChatWebSocketHandler {
+
 	return &ChatWebSocketHandler{
 		redisClient: redisClient,
+		useCases:    useCases,
 	}
 }
 
@@ -36,14 +44,24 @@ func (h *ChatWebSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	user := r.Header.Get("X-User-ID")
 	if user == "" {
-		http.Error(w, "Missing User ID", http.StatusUnauthorized)
+		errResp := dto.ErrorResponse{
+			Body: dto.ErrorBodyDTO{
+				Messages: []string{"Missing User ID"},
+			},
+		}
+		misc.WriteJSONResponse(w, http.StatusUnauthorized, errResp)
 		return
 	}
 
 	conn, err := upgrade.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("Error upgrading connection:", err)
-		http.Error(w, "Could not open WebSocket connection", http.StatusBadRequest)
+		errResp := dto.ErrorResponse{
+			Body: dto.ErrorBodyDTO{
+				Messages: []string{"Could not open WebSocket connection"},
+			},
+		}
+		misc.WriteJSONResponse(w, http.StatusUnauthorized, errResp)
 		return
 	}
 	log.Println("WebSocket connection established")
@@ -52,6 +70,7 @@ func (h *ChatWebSocketHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		Conn:    conn,
 		Channel: user,
 		Rdb:     h.redisClient.NotifyClientsRedis,
+		UseCase: h.useCases,
 	}
 
 	defer client.Close()

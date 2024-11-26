@@ -11,6 +11,10 @@ type (
 	ErrorBodyDTO struct {
 		Messages []string `json:"messages"`
 	}
+
+	ErrorBodyWsDTO struct {
+		Messages []string `json:"error"`
+	}
 )
 
 func (e *ErrorResponse) Error() string {

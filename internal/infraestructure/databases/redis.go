@@ -1,12 +1,20 @@
 package databases
 
 import (
+	"context"
 	"github.com/redis/go-redis/v9"
 	"go-live-chat/internal/configs"
 )
 
+type RedisClientInterface interface {
+	Publish(ctx context.Context, channel string, message interface{}) *redis.IntCmd
+	Ping(ctx context.Context) *redis.StatusCmd
+	Process(ctx context.Context, cmd redis.Cmder) error
+	Subscribe(ctx context.Context, channels ...string) *redis.PubSub
+}
+
 type RedisClient struct {
-	NotifyClientsRedis *redis.Client
+	NotifyClientsRedis RedisClientInterface
 }
 
 func NewRedisClient(config *configs.Config) *RedisClient {

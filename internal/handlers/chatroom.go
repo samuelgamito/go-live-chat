@@ -138,6 +138,7 @@ func (c *ChatRoomHandler) chatRoomDetails(w http.ResponseWriter, r *http.Request
 
 	if errResp != nil {
 		misc.WriteJSONResponse(w, errResp.StatusCode, errResp.Messages)
+		return
 	}
 
 	misc.WriteJSONResponse(w, http.StatusOK, dto.GetChatroomResponse(res))
